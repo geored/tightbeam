@@ -16,15 +16,15 @@ import ssl
 # ws://ws-server-nos-perf.7e14.starter-us-west-2.openshiftapps.com/ws
 
 async def start():
-    # Github Branch name
+    # Github Branch name from System Variable
     branch_name = os.getenv('GH_BRANCH','')
-    # Default Service Account Token
+    # Default Service Account Token from System Variable
     token = open(os.getenv('DEFAULT_TOKEN','')).read()
-    # Certification file for SSL
+    # Certification file for SSL from System Variable
     cert = os.getenv('CERT_FILE','')
-    # Provided URL for triggering build proccess or starting pipeline
+    # Provided URL for triggering build proccess or starting pipeline from System Variable
     build_url = os.getenv('URL_TRIGGER','')
-    # WebSockets Endpoint URL provided
+    # WebSockets Endpoint URL provided from System Variable
     ws_endpoint = os.getenv('WS_SERVER', "")
     # List of Allowed Headers from Github webhooks POST request
     alowed = ["Accept", "User-Agent", "X-Github-Event", "X-Github-Delivery", "Content-Type", "X-Hub-Signature"]
@@ -64,10 +64,9 @@ async def start():
                         # If there is websocket message from server then send HTTP POST request
                         # to generated HTTP URL for triggering build proccess
                         async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
-                            logging.warning(resp.status)
-                            logging.warning(await resp.text())
+                            logResponseMessage(resp)
                     else:
-                        logging.warning('This Repository branch name: {} is not equal to projects branch: {}'.format(ref,branch_name))
+                        logDifferentBranchName(ref,branch_name)
 
 
 def logRecivedMessage(msg):
@@ -81,6 +80,12 @@ def logRecivedMessagePayload(payload):
     logging.warning(payload.get('ref'))
     logging.warning(payload.get('pusher'))
 
+def logResponseMessage(resp):
+    logging.warning(resp.status)
+    logging.warning(await resp.text())
+
+def logDifferentBranchName(ref,branch):
+    logging.warning('This Repository branch name: {} is not equal to projects branch: {}'.format(ref, branch))
 
 # Start Non-Blocking thread for Asynchronous Handling of Long Lived Connections
 asyncio.get_event_loop().run_until_complete(start())
