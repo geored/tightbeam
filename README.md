@@ -9,3 +9,7 @@
   - provide environment variable URL_TRIGGER which is REST endpoint for starting build process or pipeline:
   
               [http|https]://[cluster ip]/[generated]/[path]/[for]/[starting]/[pipeline|build]
+
+  - privide environment variable GH_BRANCH which is github branch name for your project code:
+  
+              [github branch name]
