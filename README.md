@@ -18,13 +18,13 @@
               
   - run client docker image on your local development environment or your cluster development environment and:
 
-              - provide environment variable WS_SERVER which is url endpoint for server websocket server:
+       - provide environment variable WS_SERVER which is url endpoint for server websocket server:
 
                           [ws|wss]://[server app url]:8182/ws
-              - provide environment variable URL_TRIGGER which is REST endpoint for starting build process or pipeline:
+       - provide environment variable URL_TRIGGER which is REST endpoint for starting build process or pipeline:
 
                           [http|https]://[cluster ip]/[generated]/[path]/[for]/[starting]/[pipeline|build]
 
-              - privide environment variable GH_BRANCH which is github branch name for your project code:
+       - privide environment variable GH_BRANCH which is github branch name for your project code:
 
                           [github branch name]
