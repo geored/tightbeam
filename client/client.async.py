@@ -43,17 +43,17 @@ async def start():
             while True:
                 # Listening for recived messages from websocket server
                 response = await websocket.recv()
-                logRecivedMessage(response)
+                logRecivedMessage(response) # Log websocket recived message
                 data = json.loads(response)
                 payload = {}
                 payload["payload"] = json.loads(data["payload"])
-                logRecivedMessagePayload(payload["payload"])
+                logRecivedMessagePayload(payload["payload"]) # log websocket message payload from webhook
                 # REF Github branch for building project
                 ref = payload["payload"]["ref"].split("/")[2]
                 """uncomment folowing lines if you wannt to start build proccess from openshift client API """
                 # payload["metadata"] = {"name":"indy-perf"}
                 # payload["triggeredBy"] = {}
-
+                # Create Dictionary of allowed headers from rerouted webhook POST request
                 headers = {x:y for x,y in data["headers"].items() if x in alowed}
                 # Authorization header with token
                 headers['Authorization'] = "Bearer {}".format(token)

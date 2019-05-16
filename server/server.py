@@ -14,19 +14,19 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     SESSIONS = []
 
     def open(self, *args, **kwargs):
-        logging.warning('Connection is open')
+        logging.warning('-- Connection is open --')
         if self not in self.SESSIONS:
             self.SESSIONS.append(self)
-            logging.warning('Client Session added: {}'.format(self))
+            logging.warning('--- Client Session added: {}'.format(self))
 
     def on_close(self):
-        logging.warning('Connection is closed')
+        logging.warning('-- Connection is closed --')
         if self in self.SESSIONS:
             self.SESSIONS.remove(self)
-            logging.warning('Client Session removed: {}'.format(self))
+            logging.warning('--- Client Session removed: {}'.format(self))
 
     def on_message(self, message):
-        logging.warning('Message recived: {}'.format(message))
+        logging.warning('--- Message recived: {}'.format(message))
 
     @classmethod
     def broadcast(cls,data):
@@ -36,19 +36,19 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     @classmethod
     def heartbeat(cls):
-        logging.warning("--- Hearth Bit ---")
-        logging.warning("--- SESSIONS: {}".format(cls.SESSIONS))
+        logging.warning("- Hearth Bit -")
+        logging.warning("--- SESSIONS: [{}]".format(cls.SESSIONS))
         return "ok"
 
     def check_origin(self, origin):
-        logging.warning("--- Check Origin ---> {}".format(origin))
+        logging.warning("--- Check Origin :: {}".format(origin))
         parsed_origin = urllib.parse.urlparse(origin)
         return parsed_origin.netloc.endswith(".redhat.com")
 
 class MainHandler(tornado.web.RequestHandler):
 
     def get(self, *args, **kwargs):
-        self.render("index.html",title="Login NOS-PERF")
+        self.render("index.html",title="Login Page /NOS-PERF")
         # self.write({'status':'ok'})
 
     def post(self, *args, **kwargs):
