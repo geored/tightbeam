@@ -64,7 +64,7 @@ async def start():
                         # If there is websocket message from server then send HTTP POST request
                         # to generated HTTP URL for triggering build proccess
                         async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
-                            logResponseMessage(resp)
+                            logResponseMessage(resp,build_url)
                     else:
                         logDifferentBranchName(ref,branch_name)
 
@@ -80,7 +80,8 @@ def logRecivedMessagePayload(payload):
     logging.warning(payload.get('ref'))
     logging.warning(payload.get('pusher'))
 
-def logResponseMessage(resp):
+async def logResponseMessage(resp,url):
+    logging.warning('-- Sending HTTP POST to {}'.format(url))
     logging.warning(resp.status)
     logging.warning(await resp.text())
 
