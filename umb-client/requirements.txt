@@ -1,0 +1,6 @@
+python-qpid-proton
+requests
+six
+tornado==4.4.2
+cryptography
+pyasn1
