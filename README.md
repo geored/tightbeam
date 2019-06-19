@@ -29,7 +29,8 @@
 
                           [http|https]://[cluster ip]/[generated]/[path]/[for]/[starting]/[pipeline|build]
          OR
-       - Enter URL for Sidecar UMB-Client service from which you can raise UMB events:
+         Enter URL for Sidecar UMB-Client service from which you can raise UMB events:
+                          
                           [http]://localhost:8080/
              ( HTTP Method must be POST )
 
