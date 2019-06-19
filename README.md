@@ -28,6 +28,10 @@
        - provide environment variable URL_TRIGGER which is REST endpoint for starting build process or pipeline:
 
                           [http|https]://[cluster ip]/[generated]/[path]/[for]/[starting]/[pipeline|build]
+         OR
+       - Enter URL for Sidecar UMB-Client service from which you can raise UMB events:
+                          [http]://localhost:8080/
+             ( HTTP Method must be POST )
 
        - privide environment variable GH_BRANCH which is github branch name for your project code:
 
