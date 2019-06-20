@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ws2umb
+    deployment: ws2umb
+    deploymentconfig: ws2umb
+  name: ws2umb
+  namespace: test-lab
+spec:
+  containers:
+    - image: >-
+        indyperf/umb-client:0.0.1
+      imagePullPolicy: IfNotPresent
+      name: umb-client
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+    - image: >-
+        indyperf/ws-client:2.2.0
+      imagePullPolicy: IfNotPresent
+      name: ws-client
+      env:
+        - name: WS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: ws2umb
+              key: WS_SERVER
+        - name: URL_TRIGGER
+          valueFrom:
+            configMapKeyRef:
+              name: ws2umb
+              key: URL_TRIGGER
+        - name: GH_BRANCH
+          valueFrom:
+            configMapKeyRef:
+              name: ws2umb
+              key: GH_BRANCH
+
+

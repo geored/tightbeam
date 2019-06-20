@@ -104,4 +104,10 @@ venv.bak/
 .mypy_cache/
 
 # pycharm idea project dir
-.idea
+.idea/
+
+# dnn
+umb-client/certs/
+umb-client/tightbeam-rhmsg/build/
+umb-client/tightbeam-rhmsg/dist/
+umb-client/tightbeam-rhmsg/rhmsg.egg-info/
