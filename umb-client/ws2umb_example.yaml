@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ws2umb
+    deployment: ws2umb
+    deploymentconfig: ws2umb
+  name: ws2umb
+  namespace: nos-automation
+spec:
+  containers:
+    - image: 'indyperf/umb-client:0.0.1'
+      imagePullPolicy: Always
+      name: umb-client
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1000Mi
+        requests:
+          cpu: 300m
+          memory: 400Mi
+      securityContext:
+        capabilities:
+          drop:
+            - KILL
+            - MKNOD
+            - SETGID
+            - SETUID
+      volumeMounts:
+        - mountPath: /mnt/tightbeam-crypto  # /var/run/secrets/kubernetes.io/serviceaccount
+          name:  tightbeam-config       #default-token-h4c29
+          readOnly: true
+    - env:
+        - name: WS_SERVER   
+          valueFrom:
+            configMapKeyRef:
+              key: relay-url   #WS_SERVER from ws2umb configmap
+              name: tightbeam-config
+        - name: URL_TRIGGER   # This must be entered in tigthbeam-client configmap with value: http://localhost:8080
+          valueFrom:
+            configMapKeyRef:
+              key: URL_TRIGGER
+              name: tightbeam-config
+        - name: GH_BRANCH   # This must be entered in tigthbeam-client configmap with value for project branch name
+          valueFrom:
+            configMapKeyRef:
+              key: GH_BRANCH
+              name: tightbeam-config
+      image: 'indyperf/ws-client:2.2.0'
+      imagePullPolicy: Always
+      name: ws-client
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1000Mi
+        requests:
+          cpu: 300m
+          memory: 400Mi
+      securityContext:
+        capabilities:
+          drop:
+            - KILL
+            - MKNOD
+            - SETGID
+            - SETUID
+      volumeMounts:
+        - mountPath: /mnt/tightbeam-crypto   # /var/run/secrets/kubernetes.io/serviceaccount
+          name:  tightbeam-config  # default-token-h4c29
+          readOnly: true
+  serviceAccount: default
+  serviceAccountName: default
+  volumes:
+    - name: default-token-h4c29
+      secret:
+        defaultMode: 420
+        secretName: default-token-h4c29

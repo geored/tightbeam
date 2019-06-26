@@ -5,3 +5,4 @@ data:
   WS_SERVER: 'ws://ws-server-nos-perf.apps.us-west-2.online-starter.openshift.com/ws'
 kind: ConfigMap
 metadata:
+  name: ws2umb
