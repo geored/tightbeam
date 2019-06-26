@@ -6,19 +6,19 @@ metadata:
     deployment: ws2umb
     deploymentconfig: ws2umb
   name: ws2umb
-  namespace: test-lab
+  namespace: nos-automation
 spec:
   containers:
     - image: >-
         indyperf/umb-client:0.0.1
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       name: umb-client
       ports:
         - containerPort: 8080
           protocol: TCP
     - image: >-
         indyperf/ws-client:2.2.0
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       name: ws-client
       env:
         - name: WS_SERVER
