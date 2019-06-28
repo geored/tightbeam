@@ -64,8 +64,10 @@ async def start():
                     if branch_name != '' and branch_name == ref:
                         # If there is websocket message from server then send HTTP POST request
                         # to generated HTTP URL for triggering build proccess
-                         async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
-                             logResponseMessage(resp,build_url)
+                        # async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
+                        #     logResponseMessage(resp,build_url)
+                        producer = AMQProducer(urls="amqps://messaging-devops-broker01.dev1.ext.devlab.redhat.com:5671",certificate="rh-certs/msg-tightbeam.crt.pem",private_key="rh-certs/msg-tightbeam.key.pem",trusted_certificates="rh-certs/RH-IT-Root-CA.crt",topic="VirtualTopic.eng.tightbeam.test")
+                        producer.send_msg(dict(),str(payload).encode('utf-8'))
                     else:
                         logDifferentBranchName(ref,branch_name)
 
