@@ -42,3 +42,6 @@
        - privide environment variable GH_BRANCH which is github branch name for your project code:
 
                           [github branch name]
+         ( GH_BRANCH can be list of values separated with "," for different github branches ):
+         
+                          [ branch , branch , branch ...  ]
