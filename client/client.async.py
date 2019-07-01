@@ -6,6 +6,7 @@ import json
 import logging
 import aiohttp
 import ssl
+from rhmsg.activemq.producer import AMQProducer
 
 # json build-config payload & http endpoint
 # {"kind":"BuildRequest","apiVersion":"build.openshift.io/v1","metadata":{"name":"indy-perf","creationTimestamp":None},"triggeredBy":[{"message":"Manually triggered"}],"dockerStrategyOptions":{},"sourceStrategyOptions":{}}
@@ -63,8 +64,8 @@ async def start():
                     if branch_name != '' and branch_name == ref:
                         # If there is websocket message from server then send HTTP POST request
                         # to generated HTTP URL for triggering build proccess
-                        async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
-                            logResponseMessage(resp,build_url)
+                         async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
+                             logResponseMessage(resp,build_url)
                     else:
                         logDifferentBranchName(ref,branch_name)
 

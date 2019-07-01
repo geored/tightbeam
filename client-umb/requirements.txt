@@ -3,3 +3,4 @@ websockets==7.0
 websocket-client==v0.16.0
 requests==2.21.0
 aiohttp==v3.0.1
+python-qpid-proton
