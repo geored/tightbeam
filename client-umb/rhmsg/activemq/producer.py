@@ -22,6 +22,7 @@ class TimeoutHandler(MessagingHandler):
         event.container.error_msgs = []
         if 'cert' in self.conf and 'key' in self.conf and 'cacert' in self.conf:
             ssl = SSLDomain(SSLDomain.MODE_CLIENT)
+            print("-- Cert: {}  -- Key: {} ".format(self.conf['cert'],self.conf['key']))
             ssl.set_credentials(self.conf['cert'], self.conf['key'], None)
             ssl.set_trusted_ca_db(self.conf['cacert'])
             ssl.set_peer_authentication(SSLDomain.VERIFY_PEER)
