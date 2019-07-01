@@ -29,12 +29,15 @@
 
                           [http|https]://[cluster ip]/[generated]/[path]/[for]/[starting]/[pipeline|build]
          OR [ If you are using umb-client service ]:
-         Enter URL for Sidecar UMB-Client service from which you can raise UMB events:
+         
+                Enter URL for Sidecar UMB-Client service from which you can raise UMB events:
                           
                           [http]://localhost:8080/
              ( HTTP Method must be POST )
+        
          OR [ if you are using client service ]:
-         Just enter empty string in URL_TRIGGER environment variable.
+         
+                    Just enter empty string in URL_TRIGGER environment variable.
          
        - privide environment variable GH_BRANCH which is github branch name for your project code:
 
