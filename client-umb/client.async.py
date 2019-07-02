@@ -9,35 +9,15 @@ import ssl
 import proton
 from rhmsg.activemq.producer import AMQProducer
 
-# json build-config payload & http endpoint
-# {"kind":"BuildRequest","apiVersion":"build.openshift.io/v1","metadata":{"name":"indy-perf","creationTimestamp":None},"triggeredBy":[{"message":"Manually triggered"}],"dockerStrategyOptions":{},"sourceStrategyOptions":{}}
-# 'https://paas.upshift.redhat.com:443/apis/build.openshift.io/v1/namespaces/nos-perf/buildconfigs/indy-perf/instantiate'
-
-# http endpoint for github webhooks
-# https://paas.upshift.redhat.com/oapi/v1/namespaces/nos-perf/buildconfigs/indy-perf/webhooks/fWXhF3kdYJQsbVZdvRqS/github
-# ws://ws-server-nos-perf.7e14.starter-us-west-2.openshiftapps.com/ws
-
 async def start():
     # Github Branch name from System Variable
     branch_name = os.getenv('GH_BRANCH','')
-    # Default Service Account Token from System Variable
-    default_token = os.getenv('DEFAULT_TOKEN','')
-    if default_token != '':
-        token = open(os.getenv('DEFAULT_TOKEN','')).read()
-    else:
-        token = ""
-    # Certification file for SSL from System Variable
-    cert = os.getenv('CERT_FILE','')
     # Provided URL for triggering build proccess or starting pipeline from System Variable
     build_url = os.getenv('URL_TRIGGER','')
     # WebSockets Endpoint URL provided from System Variable
     ws_endpoint = os.getenv('WS_SERVER', "")
     # List of Allowed Headers from Github webhooks POST request
     alowed = ["Accept", "User-Agent", "X-Github-Event", "X-Github-Delivery", "Content-Type", "X-Hub-Signature"]
-    # Creating Default SSL Context
-    sslcontext = ssl.create_default_context(cafile=cert)
-    conn = aiohttp.TCPConnector(ssl_context=sslcontext)
-
     # UMB certificate files & endpoint
     topic = "VirtualTopic.eng.tightbeam."
     rh_cert = os.getenv("RH_CERT","")
@@ -45,19 +25,9 @@ async def start():
     rh_crt = os.getenv("RH_CRT","")
     amqp_url = os.getenv("AMQP_URL","")
     amqp_topic = os.getenv("AMQP_TOPIC","")
-
-
     #SSL connection present:
     print("--- SSL connection present: {}".format(proton.SSL.present()))
     print("--- RH Variables: rh_cert:{}  rh_key:{} rh_crt:{} amqp_url:{} amqp_topic:{}".format(rh_cert,rh_key,rh_crt,amqp_url,topic+amqp_topic))
-
-    # Creating Client Session with provided SSL configuration
-    async with aiohttp.ClientSession(connector=conn) as session:
-        amqp_info_url = "https://messaging-devops-broker01.dev1.ext.devlab.redhat.com:8443/info"
-        async with session.get(amqp_info_url) as resp:
-            print(resp.status)
-            print(await resp.text())
-
 
     # Opening WebSocket Connection to WebSocket server
     async with websockets.connect(ws_endpoint) as websocket:
@@ -74,26 +44,15 @@ async def start():
             logRecivedMessagePayload(payload["payload"]) # log websocket message payload from webhook
             # REF Github branch for building project
             ref = payload["payload"]["ref"].split("/")[2]
-            """uncomment folowing lines if you wannt to start build proccess from openshift client API """
-            # payload["metadata"] = {"name":"indy-perf"}
-            # payload["triggeredBy"] = {}
             # Create Dictionary of allowed headers from rerouted webhook POST request
-            headers = {x:y for x,y in data["headers"].items() if x in alowed}
-            # Authorization header with token
-            headers['Authorization'] = "Bearer {}".format(token)
+            payload['headers'] =  {x:y for x,y in data["headers"].items() if x in alowed}
             # Connection from websocket server is closed so terminate this iterations
             if response is None: break
             else:
                 if branch_name != '' and ref in branch_name.split(","):
-                    # If there is websocket message from server then send HTTP POST request
-                    # to generated HTTP URL for triggering build proccess
-                    # async with session.post(build_url, data=json.dumps(payload), headers=headers) as resp:
-                    #     logResponseMessage(resp,build_url)
-                    
                     amqp_props = dict()
                     amqp_props['subject'] = payload['payload']['head_commit']['message']
                     amqp_message = str(payload)  # "Test Message"
-                    # send AMQP message to Red Hat UMB service
                     producer = AMQProducer(
                         urls=amqp_url,
                         certificate=rh_crt,
@@ -101,6 +60,7 @@ async def start():
                         trusted_certificates=rh_cert,
                         topic=topic+amqp_topic
                     )
+                    # send AMQP message to Red Hat UMB service
                     producer.send_msg(amqp_props,amqp_message.encode("utf-8"))
                 else:
                     logDifferentBranchName(ref,branch_name)
